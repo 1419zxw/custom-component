@@ -8,13 +8,17 @@
         v-bind="comp.attribute"
         v-on="comp.events"
         class="container_item_comp"
-      ></component>
+      >
+        <template v-for="slot in slotsMap[comp.prop]" v-slot:[slot]="scope">
+          <slot :name="slot" v-bind="scope"> </slot>
+        </template>
+      </component>
     </div>
   </div>
 </template>
 
 <script setup>
-import { defineProps } from "vue"
+import { defineProps, ref, useSlots } from "vue"
 import componentMap from "./components/componentMap"
 
 const props = defineProps({
@@ -28,9 +32,36 @@ const props = defineProps({
   },
 })
 
+const $slots = useSlots()
+
 const getComponent = (type) => {
   return componentMap[type]
 }
+
+// 插槽映射表
+let slotsMap = ref({})
+const generateSlotsMap = () => {
+  // 遍历组件配置项
+  props.config.forEach((comp) => {
+    // 如果组件有传slots
+    if (comp.slots && comp.slots.length) {
+      // 遍历slots
+      slotsMap.value[comp.prop] = comp.slots.reduce((slotNameArr, slotName) => {
+        // $slots中没有此slot 报错不存在
+        if (!$slots[slotName]) {
+          console.error(`[SearchFilter] 插槽 "${slotName}" 不存在`)
+        } else {
+          // 添加slot
+          slotNameArr.push(slotName)
+        }
+
+        return slotNameArr
+      }, [])
+    }
+  })
+}
+generateSlotsMap()
+console.log(slotsMap.value)
 </script>
 
 <style lang="less">
