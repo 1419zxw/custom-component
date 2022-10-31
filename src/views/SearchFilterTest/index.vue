@@ -1,7 +1,10 @@
 <template>
   <SearchFilter :model="formModel" :config="formConfig">
-    <template #name>
-      <span style="background-color: pink">插槽</span>
+    <template #userNamePrefix>
+      <user-outlined type="user" />
+    </template>
+    <template #userNameTips>
+      <span style="color: gray">This is some tips</span>
     </template>
   </SearchFilter>
 </template>
@@ -10,8 +13,9 @@
 import SearchFilter from "@/components/SearchFilter/index.vue"
 import { reactive, toRefs, ref } from "vue"
 import { debounce } from "lodash-es"
+import { UserOutlined } from '@ant-design/icons-vue'
 export default {
-  components: { SearchFilter },
+  components: { SearchFilter, UserOutlined },
   setup() {
     const codeOptions = ref([])
 
@@ -36,7 +40,10 @@ export default {
               console.log(state.formModel)
             },
           },
-          slots: ["name", "name2"],
+          slots: {
+            prefix: 'userNamePrefix',
+            tips: 'userNameTips'
+          },
         },
         {
           label: "用户编码",
