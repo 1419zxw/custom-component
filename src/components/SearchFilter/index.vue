@@ -10,7 +10,7 @@
         class="container_item_comp"
       >
         <template
-          v-for="slot in getSlotEntries(comp.slots, comp.type)"
+          v-for="slot in getSlots(comp.slots, comp.type)"
           #[slot.name]="scope"
         >
           <slot :name="slot.value" v-bind="scope"> </slot>
@@ -39,7 +39,7 @@ const getComponent = (type) => {
   return componentMap[type];
 };
 
-const getSlotEntries = (slotsObj, compType) => {
+const getSlots = (slotsObj) => {
   if (!slotsObj) return [];
 
   return Object.entries(slotsObj).map((item) => {
