@@ -1,5 +1,9 @@
 <template>
-  <SearchFilter :model="formModel" :config="formConfig">
+  <SearchFilter
+    v-model:model="formModel"
+    :config="formConfig"
+    :baseModel="baseModel"
+  >
     <template #userNamePrefix>
       <user-outlined />
     </template>
@@ -21,7 +25,7 @@
 <script>
 import SearchFilter from "@/components/SearchFilter/index.vue";
 import { reactive, toRefs, ref } from "vue";
-import { debounce } from "lodash-es";
+import { debounce, cloneDeep } from "lodash-es";
 import {
   UserOutlined,
   PhoneOutlined,
@@ -37,16 +41,19 @@ export default {
     BankOutlined,
   },
   setup() {
+    // 基础表单
+    const baseModel = {
+      name: "",
+      code: undefined,
+      tel: "",
+      email: "",
+      address: "",
+    };
+    // 用户编码options
     const codeOptions = ref([]);
 
     const state = reactive({
-      formModel: {
-        name: "",
-        code: undefined,
-        tel: "",
-        email: "",
-        address: "",
-      },
+      formModel: cloneDeep(baseModel),
       formConfig: [
         {
           label: "用户名",
@@ -59,8 +66,7 @@ export default {
           },
           events: {
             input(e) {
-              console.log("handleInput", e.target.value);
-              console.log(state.formModel);
+              // console.log("handleInput", e.target.value);
             },
           },
           slots: {
@@ -79,8 +85,7 @@ export default {
           },
           events: {
             change(val) {
-              console.log("handleSelect", val);
-              console.log(state.formModel);
+              // console.log("handleSelect", val);
             },
             search: debounce((val) => {
               if (!val) return (codeOptions.value = []);
@@ -90,7 +95,6 @@ export default {
                   value: val,
                 },
               ];
-              console.log(codeOptions.value);
             }, 300),
           },
         },
@@ -105,8 +109,7 @@ export default {
           },
           events: {
             input(e) {
-              console.log("handleInput", e.target.value);
-              console.log(state.formModel);
+              // console.log("handleInput", e.target.value);
             },
           },
           slots: {
@@ -122,38 +125,45 @@ export default {
           },
           events: {
             input(e) {
-              console.log("handleInput", e.target.value);
-              console.log(state.formModel);
+              // console.log("handleInput", e.target.value);
             },
           },
           slots: {
             prefix: "userEmailPrefix",
           },
         },
-        {
-          label: "用户地址",
-          type: "input",
-          prop: "address",
-          attribute: {
-            maxlength: 30,
-            type: "text",
-            allowClear: true,
-          },
-          events: {
-            input(e) {
-              console.log("handleInput", e.target.value);
-              console.log(state.formModel);
-            },
-          },
-          slots: {
-            prefix: "userAddressPrefix",
-          },
-        },
+        // {
+        //   label: "用户地址",
+        //   type: "input",
+        //   prop: "address",
+        //   attribute: {
+        //     maxlength: 30,
+        //     type: "text",
+        //     allowClear: true,
+        //   },
+        //   events: {
+        //     input(e) {
+        //       console.log("handleInput", e.target.value);
+        //       console.log(state.formModel);
+        //     },
+        //   },
+        //   slots: {
+        //     prefix: "userAddressPrefix",
+        //   },
+        // },
       ],
     });
 
+    const methods = {
+      handleReset() {
+        state.formModel = cloneDeep(baseModel);
+      },
+    };
+
     return {
       ...toRefs(state),
+      ...methods,
+      baseModel,
     };
   },
 };
